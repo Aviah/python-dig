@@ -8,17 +8,15 @@
 * https://www.python.org/download/releases/2.3/mro/
 * https://www.eecg.utoronto.ca/~jzhu/csc326/readings/metaclass-class-instance.pdf
 
-### Non-obvious Python insights
+### Non-obvious Pythonic insights
 * https://github.com/satwikkansal/wtfpython
 * https://docs.python-guide.org/writing/gotchas/
 
-# Concurrency
-* https://aosabook.org/en/500L/a-web-crawler-with-asyncio-coroutines.html
-* https://neopythonic.blogspot.com/2022/10/reasoning-about-asynciosemaphore.html
 
 ### Misc
 * Generators: http://www.dabeaz.com/finalgenerator/
 * Martin Pieters answers: https://stackoverflow.com/users/100297/martijn-pieters
 * Formatting: https://pyformat.info/
 * Python's syntatic sugar: https://snarky.ca/tag/syntactic-sugar/
-
+* Asyncio: https://aosabook.org/en/500L/a-web-crawler-with-asyncio-coroutines.html
+* Asyncio: https://neopythonic.blogspot.com/2022/10/reasoning-about-asynciosemaphore.html
