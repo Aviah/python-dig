@@ -72,3 +72,24 @@ for idx, element in enumerate(infinite_gen()):
     print(idx, element)
     if idx > 3:
         break  # otherwise infinite
+
+print("=====")
+
+
+def with_return_value():
+    yield "All"
+    yield "Generalizations"
+    yield "Are"
+    return "False"
+
+
+g = with_return_value()
+print(next(g))
+print(next(g))
+print(next(g))
+try:
+    next(g)
+except StopIteration as e:
+    return_value = e.value  # The returned value is an attr of StopIteration
+
+print(return_value)
