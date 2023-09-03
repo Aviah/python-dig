@@ -1,0 +1,10 @@
+AClass = type('AClass', (), {})
+BClass = type('BClass', (AClass,), {'foo': 'baz'})
+
+print(AClass)
+print(BClass.__bases__)
+print(BClass.foo)
+a = AClass()
+b = BClass()
+print(a)
+print(b.foo)

@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "python-dig"
+version = "0.1.0"
+description = "A collection of Python snippets that showcase its more advanced features"
+authors = ["Aviah Laor <aviahl@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "python_dig"}]
+
+[tool.poetry.dependencies]
+python = "3.10.*"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
