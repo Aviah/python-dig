@@ -17,15 +17,18 @@ print(a.__repr__)
 print(a.__repr__())
 print("=====")
 print(type.__repr__(AClass))  # works, on the type
-try:
-    assert issubclass(AClass, object)
-    assert isinstance(AClass, Meta)
-    assert AClass.__repr__ is object.__repr__
-    print(object.__repr__)
-    print(AClass.__repr__())  # will *not* show AClass repr, since it goes to mro and not the type
-except TypeError as e:
-    print(repr(e))
-print(type.__repr__(AClass))  # works, goes to the type
+print("=====")
+assert issubclass(AClass, object)
+assert isinstance(AClass, Meta)
+assert AClass.__repr__ is object.__repr__
+print("-----")
+print(repr(AClass))  # works on the type
+print(object.__repr__)  # used by the instance with mro
+print("-----")
+print(AClass.__repr__(AClass))  # the type
+print("-----")
+print(type.__repr__(AClass))  # works on `type`, instead of Meta's __repr__ (no invoked message)
+print("=====")
 print(AClass.__mro__)
 print(AClass.__bases__)
 

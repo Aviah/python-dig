@@ -21,6 +21,7 @@ class Super(object):
                 break
         # Note: mro is an iterator, so the second loop
         # picks up where the first one left off!
+        # Now search the attr
         for cls in mro:
             if attr in cls.__dict__:
                 x = cls.__dict__[attr]
@@ -64,7 +65,7 @@ print(result)
 print("=====")
 # From the class, we need to specify the obj, which is the class
 # Which is why you have to code super(cls,cls) in a @classmethod
-# see super_calls.py
+# see super_mult.py
 result = D.m(D)
 print("-----")
 print(result)

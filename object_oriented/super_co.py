@@ -1,5 +1,5 @@
-# similar functionality to mixins, see mixin.py
-# maybe easier to provide default parent class, and work with changed order of components with the mro
+# Similar functionality to mixins, see mixin.py
+# Maybe easier to provide default parent class, and work with changed order of components with the mro
 
 
 class DefaultLang:
@@ -12,7 +12,7 @@ class DefaultLang:
         print(f"Bye {self.name}")
 
 
-class ItalianLang:
+class ItalianLang(DefaultLang):
     _lang = 'Italian'
 
     def greetings(self):
@@ -39,13 +39,34 @@ print(type(a).__mro__)
 a.somebody_enters()
 a.somebody_leaves()
 
+print("=====")
 
-class ItalianAccount(Account, ItalianLang):
+
+class ItalianAccountWrong(ItalianLang, Account):  # Fails
+    """Nothing happens
+    ItalianLang to the left, therefore it precedes Account in the mro
+    Thus super() from Account doesn't grab it, and still gets to DefaultLang"""
+
     pass
 
 
-print("=====")
-i = ItalianAccount('Fedrico')
+i = ItalianAccountWrong('Fedrico')
 print(type(i).__mro__)
 i.somebody_enters()
+i.somebody_leaves()
+
+print("=====")
+
+
+class ItalianAccount(Account, ItalianLang):  # Works
+    """Dependency injection:
+    super() gets to ItalianLang by mro, since it's now *after* Account,
+    but before DefaultLang (it's a subclass of DefaultLang, so before it)"""
+
+    pass
+
+
+i = ItalianAccount('Fedrico')
+print(type(i).__mro__)
+i.somebody_enters()  # subclass before the parent class, so ItalianLang before DefaultLang
 i.somebody_leaves()

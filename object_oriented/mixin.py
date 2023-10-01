@@ -1,3 +1,8 @@
+# Mixins are placed on the left, and therefore precedent in the mro
+# This is why they should not have __init__, and let Python find the __init__ on the main class
+# to the left
+
+
 class Account:
     _lang = 'English'
 
@@ -145,10 +150,9 @@ print(pierogi.goodbye())
 
 
 print("=====")
-
-
 # __init__ collisions
-# __init__ is an attribute, and the bases order affects where it's first found and run (once)
+
+
 class FrenchMixin:
     def __init__(self):
         print("FrenchMixin __init__ invoked")
@@ -163,20 +167,28 @@ class FrenchMixin:
 
 
 class FrenchAccount(FrenchMixin, Account):
+    """__init__ collision: __init__ is an attribute
+    the bases order affects where it's first found and run (once)
+    see super_co.py
+    """
+
     pass
 
 
 try:
-    victor = FrenchAccount(name='Victor Hugo')
+    victor = FrenchAccount(name='Victor Hugo')  # the mixin __init__ is not called
 except TypeError as e:
     print(repr(e))
 
 
 print("=====")
+# __init__ collisions
 
 
 class FrenchMixin:
     def __init__(self, *args, **kwargs):
+        """now the __init__ signature with *args, **kwargs allows to instanciate
+        will fail later when the attr is called"""
         print("FrenchMixin __init__ invoked")
         self._greetings = 'Salutations'
         self._goodby = 'Au revoir'
@@ -199,17 +211,23 @@ except AttributeError as e:
     print(repr(e))
 
 print("=====")
+# works
 
 
-class FrenchMixin:
-    _greetings = 'Salutations'
-    _goodby = 'Au revoir'
+class Common:
+    _greetings = 'Hi'
+    _goodbye = 'Bye'
 
     def greetings(self):
         return f"{self._greetings} {self.name}"
 
     def goodbye(self):
         return f"{self._goodby} {self.name}"
+
+
+class FrenchMixin(Common):
+    _greetings = 'Salutations'
+    _goodby = 'Au revoir'
 
 
 class FrenchAccount(FrenchMixin, Account):
@@ -220,4 +238,4 @@ victor = FrenchAccount(name='Victor Hugo')
 print(victor.status())
 print(victor.greetings())
 print(victor.goodbye())
-print(victor.language)  # _lang is missing on the mixin, picked the Partner's class attr
+print(victor.language)  # _lang is missing on the mixin, picked the Account's attr (English)

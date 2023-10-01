@@ -24,4 +24,12 @@ assert issubclass(CClass, AClass)
 assert issubclass(CClass, object)
 assert issubclass(CClass, (AClass, BClass, DClass))
 assert issubclass(EClass, (DClass, CClass, BClass, AClass, object))
+
+
+# =====
+class AnotherClass(AClass):
+    pass
+
+
+print(AClass.__subclasses__())
 print(EClass.__bases__)
