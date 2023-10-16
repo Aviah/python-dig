@@ -1,6 +1,5 @@
-import locale
-
-
+# + file is created if not exists
+# w, r: stream positioned at the beginning of the file
 def print_the_file():
     with open('foo.txt', 'r') as f:
         print(f.read())

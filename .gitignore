@@ -2,6 +2,7 @@
 .python-version
 my-*.txt
 .idea*
+poetry.lock
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
