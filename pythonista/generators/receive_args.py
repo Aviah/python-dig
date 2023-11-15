@@ -5,7 +5,7 @@ def format_text(func):
         text = yield
         if text == 'stop':
             return
-        print(f"{getattr(text,func)()}")
+        print(f"{getattr(text, func)()}")
 
 
 print("=====")

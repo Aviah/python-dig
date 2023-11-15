@@ -15,6 +15,14 @@ print(next(g))
 print(next(g))  # cycle, infinite generator
 
 
+print("=====")
+print(g.send(None))  # also invokes the generator
+print(g.send('spam'))  # nothing in the generator handles this
+print(g.send(None))
+
+print("=====")
+
+
 def simple_gen():
     yield 'foo'
     yield 'baz'
