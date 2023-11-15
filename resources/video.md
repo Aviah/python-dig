@@ -19,3 +19,4 @@
 * Unicode: https://www.youtube.com/watch?v=sgHbC6udIqc
 * Imports: https://www.youtube.com/watch?v=Nsg886UOahw
 * Dictionaries: https://www.youtube.com/watch?v=66P5FMkWoVU
+* GIL: https://www.youtube.com/watch?v=4zeHStBowEk
