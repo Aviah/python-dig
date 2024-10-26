@@ -21,7 +21,9 @@ assert 'apackage.cool' in sys.modules
 import cpackage
 
 assert not hasattr(apackage, 'bloop')
-assert hasattr(bpackage, 'bloop')  # bpackage __init__ imports modules under bloop, so bloop was added to sys.modules
+assert hasattr(
+    bpackage, 'bloop'
+)  # bpackage __init__ imports modules under bloop, so bloop was added to sys.modules
 assert hasattr(cpackage, 'bloop')
 
 assert hasattr(cpackage.bloop, 'jump')

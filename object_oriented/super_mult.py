@@ -56,7 +56,9 @@ d = DClass()
 print(d)
 d.hello()  # After B: C
 print(DClass.__mro__)
-assert DClass.__mro__ is type(d).__mro__  # super follows mro, calculate from the instance type, it's __class__
+assert (
+    DClass.__mro__ is type(d).__mro__
+)  # super follows mro, calculate from the instance type, it's __class__
 print("=====")
 e1 = EClass()
 print(e1)

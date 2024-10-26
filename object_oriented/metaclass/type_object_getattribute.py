@@ -17,7 +17,9 @@ class BClass(AClass):
 # Metaclass attributes are available to the class
 assert 'callme' not in dir(AClass)
 assert 'spam' not in dir(AClass)
-assert hasattr(AClass, 'callme')  # this is a glitch of the dir implementation  https://bugs.python.org/issue40098
+assert hasattr(
+    AClass, 'callme'
+)  # this is a glitch of the dir implementation  https://bugs.python.org/issue40098
 assert hasattr(AClass, 'spam')
 print(AClass.callme)
 print(AClass.spam)

@@ -1,5 +1,5 @@
-from typing import Callable
 import sys
+from typing import Callable
 
 
 # functions are just objects

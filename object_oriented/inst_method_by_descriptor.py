@@ -15,7 +15,9 @@ print(type(f1))  # Same, we just used the descriptor manually, which is normally
 print(f1())
 print(foo.double_it is f1)
 assert foo.double_it == foo.double_it
-assert foo.double_it is not foo.double_it  # The descriptor returns different objects per every access: “is” fails
+assert (
+    foo.double_it is not foo.double_it
+)  # The descriptor returns different objects per every access: “is” fails
 assert foo.double_it.__func__ == Foo.double_it  # Underlying func is the same, that's why "==" works
 assert foo.double_it is not Foo.double_it
 assert foo.double_it == f1

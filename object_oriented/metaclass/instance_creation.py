@@ -29,7 +29,9 @@ class CClass:
     def __new__(cls, *args, **kwargs):
         print(f"CClass __new__ invoked: {cls} | {args} | {kwargs}")
         print(super())
-        return super().__new__(AClass)  # returns instance of *another* class, metacls will not invoke it's __init__
+        return super().__new__(
+            AClass
+        )  # returns instance of *another* class, metacls will not invoke it's __init__
 
     def __init__(self, *args, **kwargs):
         print(f"CClass __init__ invoked: {self} | {args} | {kwargs}")

@@ -14,7 +14,13 @@ class Subclass(AClass):
 
 a = AClass()
 s = Subclass()
-assert hasattr(AClass, 'foo')  # AClass is an *instance* of the metaclass, declared with the `metaclass=` arg: ok
-assert hasattr(Subclass, 'foo')  # Subclass is a subclass of an instance of the metaclass, simple inheritance: ok
-assert not hasattr(a, 'foo')  # 'a' is an *instance of an instance* of the metaclass: attr lookup stops at Aclass
+assert hasattr(
+    AClass, 'foo'
+)  # AClass is an *instance* of the metaclass, declared with the `metaclass=` arg: ok
+assert hasattr(
+    Subclass, 'foo'
+)  # Subclass is a subclass of an instance of the metaclass, simple inheritance: ok
+assert not hasattr(
+    a, 'foo'
+)  # 'a' is an *instance of an instance* of the metaclass: attr lookup stops at Aclass
 assert not hasattr(s, 'foo')  # same

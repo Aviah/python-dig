@@ -81,14 +81,14 @@ class Iterator:
 
 def delegating(x, y):
     try:
-        yield from Iterator(x,y)
+        yield from Iterator(x, y)
     except GeneratorExit as e:
         print(f"Delegating excepted on GeneratorExit of delegated: {repr(e)}")
 
     # can yield from other generators here
 
 
-g = delegating( 100, 104)
+g = delegating(100, 104)
 next(g)
 g.send(None)  # 101, when send None, the delegating gen calls the delegated next
 print(next(g))
@@ -99,24 +99,28 @@ g.close()  # can use the GeneratorExit exception
 print("====")
 # after GeneratorExit
 
-def delegating1( x, y):
+
+def delegating1(x, y):
     try:
-        yield from IteratorYieldOnClose(x,y)
+        yield from IteratorYieldOnClose(x, y)
     except GeneratorExit as e:
         print(f"Delegating excepted on GeneratorExit of delegated: {repr(e)}")
         yield "Don't yield here"
+
 
 class IteratorYieldOnClose(Iterator):
     def close(self):
         yield 100
         print("Will not get here")
 
+
 class IteratorExceptOnClose(Iterator):
     def close(self):
         print("Raising on close")
         raise TypeError("spam")
 
-g1 = delegating1( 100, 104)
+
+g1 = delegating1(100, 104)
 print(next(g1))
 try:
     g1.close()  # can use the GeneratorExit exception
@@ -125,13 +129,15 @@ except RuntimeError:
 
 print("=====")
 
+
 def delegating2(gen_class, x, y):
-    delegated = gen_class(x,y)
+    delegated = gen_class(x, y)
     try:
         yield from delegated
     except GeneratorExit as e:
         print(f"Delegating excepted on GeneratorExit of delegated: {repr(e)}")
         raise EnvironmentError('foo')
+
 
 print("=====")
 g2 = delegating2(IteratorExceptOnClose, 100, 104)
@@ -148,4 +154,3 @@ try:
     g3.close()  # delegating raises another exception
 except Exception as e:
     print(repr(e))
-
