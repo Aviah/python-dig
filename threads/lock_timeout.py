@@ -10,22 +10,24 @@ def using_foo():
     global lock_bar
     print(f"Enter {threading.current_thread().name}\n", end='')
     with lock_foo as lock:
-        print(f"Acquired foo: {lock}, waiting for bar...")
+        print(f"Acquired foo: {lock}")
         time.sleep(1)
-        while not lock_bar.acquire(blocking=False):
-            time.sleep(0.2)
-            print("Failed, still waiting")
-        print("Got bar! Good bye")
+        print("Waiting for bar...")
+        lock = lock_bar.acquire(timeout=1)
+        # lock = lock_bar.acquire(timeout=4)
+        if not lock:
+            print(f"Timed out: {lock}. Good bye!")
+        else:
+            print(f"Got the lock! {lock}. Good bye!")
 
 
 def using_bar():
-    global lock_foo
     global lock_bar
     print(f"Enter {threading.current_thread().name}\n", end='')
     with lock_bar:
         print("Acquired  bar...")
-        time.sleep(2)
+        time.sleep(3)
 
 
-threading.Thread(target=using_foo).start()
 threading.Thread(target=using_bar).start()
+threading.Thread(target=using_foo).start()
