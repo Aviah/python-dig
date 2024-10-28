@@ -1,7 +1,6 @@
 import threading
 import time
 
-
 withdrawal_lock = threading.Lock()
 
 
@@ -31,11 +30,14 @@ balance = 1000
 
 def another_atm(sec):
     global balance
-    with withdrawal_lock:
-        if balance >= 100:
-            time.sleep(sec)  # Counting money
-            balance -= 100
-            print(f"Another atm: {balance}\n", end='')
+    withdrawal_lock.acquire()
+    if balance >= 100:
+        time.sleep(sec)  # Counting money
+        balance -= 100
+        print(f"Another atm: {balance}\n", end='')
+    # No context manager, no exception handling: Any exception will leave all withdrawals locked!
+    # When manually acquire/release, add lock.release() in a finally clause
+    withdrawal_lock.release()
 
 
 for i in range(11):

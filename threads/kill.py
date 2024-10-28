@@ -1,6 +1,5 @@
-import time
 import threading
-
+import time
 
 should_run: bool = True
 

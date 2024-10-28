@@ -14,5 +14,5 @@ t = threading.Thread(target=answer, kwargs={'sec': 2})
 print("Start thread...\n", end='')
 t.start()
 print("Not done yet...\n", end='')
-t.join()
+t.join()  # Wait until the thread finished and "joined" the main thread
 print("Done!")

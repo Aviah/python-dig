@@ -1,5 +1,5 @@
-import threading
 import queue
+import threading
 import time
 
 withdrawal_queue = queue.Queue()
