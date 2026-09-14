@@ -12,6 +12,7 @@ def just_a_thread():
 print("\n===== Starting a thread =====")
 t = threading.Thread(target=just_a_thread)  # can provide custom name arg here
 t.start()
+print("The thread has been started...")
 print(f"It's name is: {t.name}")
 print(f"It's thread id is {t.ident}")
 print(f"Is alive: {t.is_alive()}")
