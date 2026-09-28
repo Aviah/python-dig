@@ -33,9 +33,11 @@ only when a reference is absolutely necessary to better understand the snippet, 
 There is also a list of recommended resources, if you got the time, but the idea is just to jump to a random snippet at a time and tinker with it.
 
 ### Run the code
-Use Python 3.10, but most of the scripts will probably run w/o an issue on earlier versions (pyenv is useful if your OS bundled Python is less than 3.10).
+Use Python 3.14, but most of the scripts will probably run w/o an issue on earlier versions (pyenv is useful if your OS bundled Python is less than 3.10).
 
-Easiest would be to `cd` the repo directory, and then:
+Easiest would be to use uv
+
+Note: The a_task.py script in concurrency/asyncio is especially useful to understand how Asyncio works
 ```
 $ pyenv local 3.10   (if required) 
 $ poetry shell
