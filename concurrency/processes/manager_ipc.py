@@ -1,6 +1,6 @@
 import datetime
 import  multiprocessing as mp
-from concurrent.futures import ProcessPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor
 
 
 def work(d,l):
