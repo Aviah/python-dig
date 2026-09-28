@@ -38,6 +38,11 @@ Use Python 3.14, but most of the scripts will probably run w/o an issue on earli
 Easiest would be to use uv
 
 Note: The a_task.py script in concurrency/asyncio is especially useful to understand how Asyncio works
+
+
+### Env vars
+For asyncio, recommended:
 ```
-$ pyenv local 3.10   (if required) 
-$ poetry shell
+PYTHONASYNCIODEBUG=1
+PYTHONTRACEMALLOC=1
+```
