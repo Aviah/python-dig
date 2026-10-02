@@ -11,7 +11,7 @@ with open('foo.txt', 'w') as f:
     f.write("Hi there!\n")
 
 with open('foo.txt', 'w') as f:
-    f.write("Hi there!\n")
+    f.write("Hi there again!\n")
 
 with open('foo.txt', 'a') as f:
     f.write("Say cheese\n")
@@ -65,5 +65,12 @@ with open('baz.txt', 'rb') as f:
 with open('baz.txt', 'r', encoding='UTF-8') as f:
     print(f.read())
 
-with open('baz.txt', 'r', encoding='ANSI_X3.4-1968') as f:  # ASCII encoding
-    print(f.read())  # fails, non ASCII
+try:
+    with open('baz.txt', 'r', encoding='ANSI_X3.4-1968') as f:  # ASCII encoding
+        print(f.read())  # fails, non ASCII
+except Exception as e:
+    print(repr(e))
+
+
+with open('foo.txt', 'w') as f:
+    f.write('Luggnagg')

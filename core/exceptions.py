@@ -32,6 +32,7 @@ def foo(x):
     except EnvironmentError as e:
         print(repr(e))
         print(e.args)
+        print(e.filename)
 
     except MyError as e:
         if v >= 1000:

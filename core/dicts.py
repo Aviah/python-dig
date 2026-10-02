@@ -1,3 +1,9 @@
+
+from collections import ChainMap, defaultdict
+from functools import partial
+from random import randint
+
+
 colors = {
     'red': 1,
     'blue': 'favourite',
@@ -70,8 +76,6 @@ d.update(e)
 print(d)
 
 print("=====")
-from collections import ChainMap, defaultdict
-from random import randint
 
 d = defaultdict(list)
 d['foo'].append(1)
@@ -79,7 +83,6 @@ d['baz'].extend([100, 200, 300])
 print(d)
 
 
-from functools import partial
 
 d = defaultdict(partial(randint, 0, 100))
 print(d)
@@ -105,7 +108,7 @@ assert d.get('foo') is None
 print(d.get('foo', 'block'))
 
 
-print("=====")
+print("\n===== ChainMap =====")
 d = {'spam': 'eggs', 'bar': 'baz'}
 e = {'foo': 'maybe'}
 print(list(ChainMap(d, e).items()))
@@ -113,9 +116,7 @@ assert 'spam' in ChainMap(d, e)
 assert 'foo' in ChainMap(d, e)
 
 
-print("=====")
-
-
+print("\n===== hash, eq =====")
 class AClass:
     def __init__(self, x: int, y: str):
         self.x = x
@@ -152,11 +153,13 @@ print(b2)
 assert b2 in d  # same hash and equal
 
 
-print("=====")
+print("\n===== Iterate & mutate =====")
 d = {'smtp': 21, 'dict': 2628, 'svn': 3690, 'ircd': 6667, 'zope': 9673}
 for k in d:
+    # mutate a value while iterating keys, works
     d['smtp'] = 9999
 print(d)
+
 from random import randint
 
 for k in list(d.keys()):
@@ -171,10 +174,10 @@ for k in list(d.keys()):
         del d[k]
 print(d)
 
+# RuntimeError: dictionary changed size during iteration
 d = {'smtp': 21, 'dict': 2628, 'svn': 3690, 'ircd': 6667, 'zope': 9673}
 try:  # the try clause should enclose the loop over dict block
     for k in d:
-        # loop over a view, reflects the dict state
         if k == 'smtp':
             d['foo'] = 'baz'  # iterate over a view of the dict, fails
 except Exception as e:

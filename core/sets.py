@@ -4,9 +4,10 @@ s3 = {1, 2, 3, 100, 200}
 s4 = {2, 3, 1000}
 
 assert s2 >= s1
-assert not s3 > s1
+assert not s3 > s1  # superset
+assert s1 < s2  # subset
 print(s3 - s1)
-print(s3 ^ s1)
+print(s3 ^ s1)  # symmetric difference
 assert (s3 - s1) != (s1 - s3)
 assert (s3 ^ s1) == (s1 ^ s3)
 assert {'a', 'b', 'c'}.isdisjoint(s1)

@@ -1,3 +1,6 @@
+
+from itertools import chain
+
 outer_loop = [1, 2, 3, 4]
 nested_loop = ['foo', 'bar', 'baz']
 
@@ -11,7 +14,6 @@ l1 = [x for x in outer_loop if x > 2]
 print(l1)
 t = tuple([x for x in outer_loop if x <= 2])
 print(t)
-from itertools import chain
 
 print([x for x in chain(outer_loop, ['spam', 'eggs'])])
 
@@ -37,3 +39,5 @@ The slice of s from i to j is defined as the sequence of items with index k such
 If i or j is greater than len(s), use len(s)"""
 print(len(outer_loop))
 print(outer_loop[0:50])
+print(outer_loop[-50:])
+

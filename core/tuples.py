@@ -7,10 +7,11 @@ except Exception as e:
 
 print(sorted(t))  # to list, then sort
 
-
 m = ()
 print(type(m))
 m = (10,)
+print(type(m))
+m = 10,  # non idiomatic, common mistake to forget a comma at the end of the line
 print(type(m))
 
 a, b, c, d, e = t
@@ -25,8 +26,9 @@ print(the_rest)
 t = (100, 'a', 'b', 200)  # sorted as is will fail
 print(sorted(t, key=lambda x: len(x) if type(x) is str else x))
 
-from typing import NamedTuple
 
+print("\n===== Named Tuple =====")
+from typing import NamedTuple
 
 class Account(NamedTuple):
     id: int
@@ -42,4 +44,7 @@ print(a.name)
 assert hasattr(a, '__iter__')  # unlike dataclass
 print([x for x in a])
 
-a.name = 'Another name'  # fails, unlike default dataclass
+try:
+    a.name = 'Another name'
+except Exception as e:
+    print(repr(e))  # fails, unlike default dataclass
