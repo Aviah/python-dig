@@ -47,3 +47,4 @@ assert not baz()
 baz.spam = 'eggs'
 assert baz()
 print(baz.__dict__)
+assert hasattr(baz, '__get__')  # this allows functions to be methods, see descriptors

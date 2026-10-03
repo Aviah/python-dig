@@ -2,32 +2,32 @@ import functools
 from typing import Callable
 
 
-def unwrapped(func: Callable):
+def not_wrapped(func: Callable):
     def inner():
-        """I'm the inner of unwrapped"""
-        print("Hello from unwrapped")
+        """I'm the inner of not wrapped"""
+        print("Hello from not wrapped")
         return func()
 
     return inner
 
 
-def wrapped(func: Callable):
+def is_wrapped(func: Callable):
     @functools.wraps(func)  # A builtin decorator
     def inner():
         """I'm the inner of wrapped"""
-        print("Hello from wrapped")
+        print("Hello from is wrapped")
         func()
 
     return inner
 
 
-@unwrapped
+@not_wrapped
 def foo():
     """I'm foo"""
     print("Foo")
 
 
-@wrapped
+@is_wrapped
 def baz():
     """I'm baz"""
     print("Baz")

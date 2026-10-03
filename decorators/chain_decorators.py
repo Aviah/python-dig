@@ -3,20 +3,22 @@ from functools import wraps
 
 
 def double_it(func):
-    functools.wraps(func)
 
+    @functools.wraps(func)
     def inner(*args, **kwargs):
         return func(*args, **kwargs) * 2
 
+    print(func)
     return inner
 
 
 def square_it(func):
-    functools.wraps(func)
 
+    @functools.wraps(func)
     def inner(*args, **kwargs):
         return pow(func(*args, **kwargs), 2)
 
+    print(func)
     return inner
 
 

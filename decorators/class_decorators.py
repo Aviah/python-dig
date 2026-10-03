@@ -1,7 +1,10 @@
-# This could be easily done with simple inheritance
-# But not when the modification is known only at runtime
 # Class decorator is a simple alternative to metaclass
 # Python has its own class decorators, like @dataclass
+# Class decorators are useful when common modification/functionality to many unrelated classes, without inheritance
+
+import datetime
+import functools
+import inspect
 
 
 def double_it(self, x):
@@ -9,12 +12,12 @@ def double_it(self, x):
     return x * 2
 
 
-def class_decorator(cls):
+def add_double_it_method(cls):
     cls.double_it = double_it
     return cls
 
 
-@class_decorator
+@add_double_it_method  # Adds a method, no inheritance
 class AdvancedLinearAlgebra:
     pass
 
@@ -22,11 +25,8 @@ class AdvancedLinearAlgebra:
 a = AdvancedLinearAlgebra()
 print(a.double_it(100))
 
-import datetime
-import functools
 
-
-def print_timestamp(func):
+def print_timestamp_decorator(func):
     @functools.wraps(func)
     def inner(*args, **kwargs):
         print(datetime.datetime.now().isoformat())
@@ -35,27 +35,27 @@ def print_timestamp(func):
     return inner
 
 
-@print_timestamp
-def tripple_it(x):
+@print_timestamp_decorator
+def triple_it(x):
     return x * 3
 
+print(triple_it(1000))
 
-print(tripple_it(1000))
 
-
-def print_timestampe_for_methods(cls):
+def print_timestamp_for_methods(cls):
     print(vars(cls))
     print(dir(cls))
     print(cls.__dict__)
     for k, v in vars(cls).items():
-        if callable(v):
+        if inspect.isfunction(v):
+            func = v
             print(f"Decorating {cls}.{k}")
-            setattr(cls, k, print_timestamp(v))
+            setattr(cls, k, print_timestamp_decorator(func))
 
     return cls
 
 
-@print_timestampe_for_methods
+@print_timestamp_for_methods  # decorate all class methods
 class AClass:
     def __init__(self, foo):
         print("__init__ invoked")

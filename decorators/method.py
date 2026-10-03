@@ -21,7 +21,7 @@ class AClass:
     def __init__(self, name):
         self.name = name
 
-    @classmethod  # The descriptor takes the decorated function
+    @classmethod  # Order is important: The descriptor takes the already decorated function
     @print_invocation_timestamp
     def counter(cls):
         return cls._counter
@@ -38,6 +38,7 @@ class AClass:
 
 a = AClass('John')
 b = AClass('Paul')
+print(a.counter())
 print(b.counter())
 print(b.double_it(100))
 print(b.say_hi())
