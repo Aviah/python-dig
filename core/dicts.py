@@ -75,13 +75,24 @@ e['ircd'] = 5555
 d.update(e)
 print(d)
 
+
+# see hashing_eq.py
+try:
+    lst = [1, 2, 3]
+    d[lst] = "maybe"
+except Exception as e:
+    print(repr(e))
+
+d[(1, 2, 3)] = 'jump'
+print(d[(1, 2, 3)])
+
+
 print("=====")
 
 d = defaultdict(list)
 d['foo'].append(1)
 d['baz'].extend([100, 200, 300])
 print(d)
-
 
 
 d = defaultdict(partial(randint, 0, 100))
@@ -116,43 +127,6 @@ assert 'spam' in ChainMap(d, e)
 assert 'foo' in ChainMap(d, e)
 
 
-print("\n===== hash, eq =====")
-class AClass:
-    def __init__(self, x: int, y: str):
-        self.x = x
-        self.y = y
-
-    def __hash__(self):
-        return hash(self.x)
-
-    def __eq__(self, other):
-        return self.y == other.y
-
-
-class BClass(AClass):
-    def __hash__(self):
-        # When defining custom __eq__, Python sets __hash__ to None, even if parent class *has* __hash__
-        # To enable hashing, have to explicitly define it
-        return hash(self.x)
-
-    def __eq__(self, other):
-        return self.x == other.x
-
-
-a1 = AClass(123, 'foo')
-a2 = AClass(123, 'baz')
-d = {a1: 100}
-print(d)
-assert a2 not in d  # same hash, not equal
-
-b1 = BClass(123, 'foo')
-b2 = BClass(123, 'baz')
-d = {b1: 100}
-print(d)
-print(b2)
-assert b2 in d  # same hash and equal
-
-
 print("\n===== Iterate & mutate =====")
 d = {'smtp': 21, 'dict': 2628, 'svn': 3690, 'ircd': 6667, 'zope': 9673}
 for k in d:
@@ -183,8 +157,8 @@ try:  # the try clause should enclose the loop over dict block
 except Exception as e:
     print(repr(e))
 
-for k in d:  # fails
-    try:
-        del d[k]
-    except Exception:
-        pass
+try:
+    for k in d:
+        del d[k]  # del key during an iteration over keys, fails
+except Exception as e:
+    print(repr(e))

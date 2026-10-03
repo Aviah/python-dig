@@ -18,3 +18,14 @@ print(s1 & s2 & s3 & s4)
 
 # set comprehension
 print({x for x in range(0, 20, 2)})
+
+# see hashing_eq.py
+lst = [1, 2, 3, 4]
+s = {100, 200}
+try:
+    s.add(lst)
+except Exception as e:
+    print(repr(e))
+s.add((1,2,3,4))
+print(s)
+
