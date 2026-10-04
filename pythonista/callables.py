@@ -1,3 +1,6 @@
+from functools import partial
+from random import randint
+
 def double_it(x):
     return x * 2
 
@@ -30,13 +33,8 @@ print(list.__call__((1, 2, 3)))
 class Aclass:
     pass
 
-
 assert callable(Aclass)
 assert not callable(Aclass())
-
-
-from functools import partial
-from random import randint
 
 print(randint(0, 100))
 f = partial(randint, 0, 100)

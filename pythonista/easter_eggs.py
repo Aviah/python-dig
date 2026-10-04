@@ -1,2 +1,4 @@
-# from __future__ import braces  # uncomment and run
+# uncomment the following import and then run the script
+# from __future__ import braces
+
 import this

@@ -40,7 +40,16 @@ b[0] = 200
 print(a)
 print(b)
 
-a = b  # Binding. This is not an assignment, the symbol "a" now points to the same object that "b" points to
+class A: pass
+a = A()
+a.prop = 123456
+print(a.prop)
+
+
+# Binding: This looks like an assignment
+# The symbol "a" is bound to the same object that "b" is bound to
+# see pythonista/name_binding.py
+a = b
 print(a)
 print(b)
 b[0] = 99999
@@ -48,9 +57,11 @@ print(a)
 print(b)
 assert  a is b
 
+d = {'foo': 'bar'}
+m = d
+print(m)
+d['foo'] = 'spam'
+print(m)
 
-class A: pass
-a = A()
-a.prop = 123456
-print(a.prop)
+
 

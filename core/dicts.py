@@ -118,6 +118,11 @@ except KeyError as e:
 assert d.get('foo') is None
 print(d.get('foo', 'block'))
 
+d = {'foo': 1, 'bump': 2}
+print(d)
+d.clear()
+print(d)
+
 
 print("\n===== ChainMap =====")
 d = {'spam': 'eggs', 'bar': 'baz'}
@@ -162,3 +167,4 @@ try:
         del d[k]  # del key during an iteration over keys, fails
 except Exception as e:
     print(repr(e))
+

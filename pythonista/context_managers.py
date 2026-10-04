@@ -1,11 +1,10 @@
+from contextlib import contextmanager
+import os
 import threading
 
 lock = threading.Lock()
 with lock:
     print("Protected action")
-
-
-from contextlib import contextmanager
 
 
 @contextmanager
@@ -16,7 +15,6 @@ def ignore_exceptions(*exceptions):
         print(f"Ignored: {repr(e)}")
 
 
-import os
 
 with ignore_exceptions(OSError):
     os.remove("nosuchfile.tmp")
@@ -30,23 +28,24 @@ with ignore_exceptions(ValueError, KeyError):
     x = 200
     print(d[int(x)])
 
-
+print("=====")
 class ContextMan:
     def __init__(self, foo='baz', ignore_exceptions=False):
-        # __init__ required only if the context manager accepts arguments
+        # __init__ is useful when the context manager uses arguments
         self.foo = foo
         self.ignore_exceptions = ignore_exceptions
 
-    def __enter__(self, foo='baz'):
-        print(f"__enter__ {self.foo}")
+    def __enter__(self):
+        print(f"__enter__, foo is: {self.foo}")
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        print(f"__exit__ {self.foo}: {exc_type} | {exc_val} | {exc_tb}")
+        print(f"__exit__, foo is: {self.foo}: {exc_type} | {exc_val} | {exc_tb}")
         if exc_type and self.ignore_exceptions:
             # to let the exception propagate do nothing
-            print("Ignore exceptions")
+            print(f"Ignore exception: {repr(exc_type)}")
             return True
+
 
     def mult(self, x):
         return self.foo * x
@@ -70,8 +69,9 @@ def contextman(foo, ignore_exceptions=False):
         yield
     except Exception as e:
         if ignore_exceptions:
-            print(f"Ignoring exception {repr(e)}")
-            return True
+            print(f"Ignoring exception {repr(e)}")  # no need to return True with contextlib
+        else:
+            raise
     finally:
         print("exit contextman")
 
@@ -80,9 +80,16 @@ with contextman('bar'):
     print('hello')
 
 with contextman('bar', ignore_exceptions=True):
-    assert False
+    x = y
+
+try:
+    with ContextMan('eggs'):
+        int('abc')  # The context manager will propagate the exception
+except Exception as e:
+    print(repr(e))
 
 
+print("=====")
 class Connection:
     def __init__(self, connection):
         self.connection = connection
@@ -93,7 +100,6 @@ class Connection:
     def __exit__(self, exc_type, exc_val, exc_tb):
         print(f"Close connection: {self.connection}")
 
-
 class TempState:
     def __init__(self, state: dict):
         self.state = state
@@ -103,15 +109,12 @@ class TempState:
         pass
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        for k in self.orig_state.keys():
-            if k in self.state:
-                self.state[k] = self.orig_state[k]
-            else:
-                del self.state[k]
+        self.state.clear()
+        self.state.update(self.orig_state)
 
 
 state = {'max_rows': 1000}
-connection = 'Postgresql'
+connection = 'PostgreSQL'
 print(state)
 with Connection(connection):
     with TempState(state):
@@ -120,6 +123,3 @@ with Connection(connection):
         print(f"do something")
 print(state)
 
-
-with ContextMan('eggs'):
-    int('abc')  # The context manager will propagate the exception

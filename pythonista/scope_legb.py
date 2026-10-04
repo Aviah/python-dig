@@ -3,10 +3,11 @@
 import sys
 
 
+sum = 'sum global string'
+
 def f1():
     sum = 'sum local string'
     print(sum)
-
 
 def outer(x):
     sum = x
@@ -17,75 +18,110 @@ def outer(x):
     return inner
 
 
-sum = 'sum global string'
-
-
 def f2():
     print(sum)
 
 
-f1()  # Local
-outer(100)()  # Enclosing
-f2()  # Global
+f1()  # local
+outer(100)()  # enclosing
+f2()  # global
 m = sys.modules[__name__]
 delattr(m, 'sum')
 f2()  # builtin
 
-print("=====")
-# Lexical scoping
-country = 'Laputa'
+print("\n===== Lexical scoping =====")
 
+country = 'Laputa'
+print(f"global: {country}")
+
+def assume_global():
+    print(f"assume_global: {country}")  # no local binding, Python will find scope from LEGB, here it's global
+assume_global()
 
 def outer():
     country = 'Luggnagg'
+    print(f"outer: {country}")
 
-    def f3():
+    def c1():
         nonlocal country  # relates to enclosing scope that is not global
         country = 'Balnibarbi'
-        print(country)
+        print(f"c1: {country}")
 
-    def f4():
+    def c2():
         country = 'Glubdubdrib'
-        print(country)
+        print(f"c2: {country}")
 
-    def f5():
-        print("f5 invoked")
-        nonlocal country
-        print(country)
+    def c3():
+        nonlocal country  # Optional: since there is no local assignment, Python will look for the next scope in LEGB
+        print(f"c3: {country}")
 
-    def f6():
+    def c4():
         global country
-        print(country)
+        print(f"c4: {country}")
 
-    def f7():
+    def c5():
         global country
         country = 'Utopia'
-        print(country)
+        print(f"c5: {country}")
 
-    def f8():
+    def c6():
+        # we do not need nonlocal, since country is not assigned in c6: Python does not consider it local
+        print(f"c6: {country}")
+
+    def c7():
         try:
-            print(country)  # w/o nonlocal, the variable is not defined
+            # Because country is assigned in c7, Python treats it as *local* to c7.
+            # Here it is still not bound: the print will fail
+            print(country)
         except UnboundLocalError as e:
-            print(repr(e))  # This exception is spot on! try print(abc)
-        country = 'Never never land'
-        print(country)
+            print(f"c7 raised: {repr(e)}")
+        country = 'Never Neverland'
+        print(f"c7: {country}")
 
-    return f3, f4, f5, f6, f7, f8
+    return c1, c2, c3, c4, c5, c6, c7
 
-
-print(country)
 funcs = outer()
-[f() for f in funcs]
-f5 = funcs[-4]
-f5()
-print(country)
+for f in funcs:
+    f()
+c3 = funcs[2]  # the closure keeps the correct ref to outer scope (which was changed in c1)
+c3()
+print(f"global: {country}")  # c5 changed the global scope
+
+
+print('-----')
+
+def outer():
+    country = {'name': 'Never Neverland'}
+    print(f"outer: {country['name']}")
+
+    def c8():
+        country['name'] = 'Utopia'  # mutating the same object, unlike local assignment: nonlocal is not needed here
+        print(f"c8: {country['name']}")
+
+    def c9():
+        country = {'name': 'Luggnagg'}
+        print(f"c9: {country['name']}")
+
+    def c10():
+        print(f"c10: {country['name']}")
+
+    return c8, c9, c10
+
+funcs = outer()
+for f in funcs:
+    f()
+
+
 """
-# Will not work
-# Classes don't use lexical scope, but as attribute of an object. Here: self.foo
+Classes do not use lexical scope. They create a a namespace, and names become attributes.
+Search is done via attributes lookup, not via lexical scope.
+
+--- Will not work ---
 class AClass:
     foo = 'baz'
 
     def print_foo(self):
-        nonlocal foo
-        print(foo)
+        nonlocal foo  # wrong
+        print(foo)  # should be self.foo
+
 """

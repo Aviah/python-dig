@@ -1,5 +1,5 @@
-# All assignments are just linking a symbol to an object
-# Any symbol can point to any object
+# All assignments are just binding of a symbol, the name, to an object
+# Any symbol can bind to any object
 print(sum)
 print(sum(range(10)))
 
@@ -29,6 +29,7 @@ def my_max(m, builtin_max=max):
 
 max = my_max
 max([10, 1, 2, 3, 4, 5])
+print(max(['a', 'b', 'c']))
 
 import inspect
 
@@ -39,8 +40,18 @@ print(max([10, 1, 2, 3, 4, 5]))
 print(max)
 assert inspect.signature(my_max).parameters['builtin_max'].default is max
 
-d = {'spam': 'baz'}
 
+d = {'spam': 'bloop'}
+m = d
+print(m)
+d['spam'] = 'jump'  # same object that both d and m are bind to
+print(m)
+d = {'spam': 'baz'}  # new object, m still binds to the previous
+print(m)
+n = m
+m.clear()
+print(m)
+print(n)
 
 class AClass:
     def __init__(self, x):
