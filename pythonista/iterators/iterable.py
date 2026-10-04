@@ -1,4 +1,4 @@
-class Iterator:
+class SimpleIterator:
     def __init__(self, times: int):
         self.itr = 0
         self.times = times
@@ -14,14 +14,15 @@ class Iterator:
         raise StopIteration
 
 
-class Iterable:
+class SimpleIterable:
+    # Iterable is the factory of iterators
     def __init__(self, times: int):
         self.times = times
 
     def __iter__(self):
-        return Iterator(self.times)  # return a fresh iterator
+        return SimpleIterator(self.times)  # return a fresh iterator
 
 
-i = Iterable(3)
-print([x for x in i])  # exhausted
-print([x for x in i])  # yet iterable again
+itb = SimpleIterable(3)
+print([x for x in itb])  # exhausted
+print([x for x in itb])  # fresh iterator

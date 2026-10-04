@@ -1,10 +1,10 @@
-class Iterator:
+class SimpleIterator:
     def __init__(self, times: int):
         self.itr = 0
         self.times = times
 
     def __iter__(self):
-        # An iterator should support __iter__, like an iterable, and return self
+        # An iterator implements __iter__ and returns itself.
         return self
 
     def __next__(self):
@@ -15,24 +15,45 @@ class Iterator:
         raise StopIteration
 
 
-for i in Iterator(5):
+for i in SimpleIterator(5):
     print(i)
 
+print("-----")
+itr = map(lambda x: x * 100, SimpleIterator(10))
+print(itr)
+print(next(itr))
+print(next(itr))
+print(list(itr))
 
-print(list(map(lambda x: x * 100, iter(Iterator(10)))))
 
-iterator = Iterator(4)
-print(next(iterator))
-print(next(iterator))
-print(next(iterator))
-print(next(iterator))
+print("-----")
+
+itr = SimpleIterator(4)
+print(next(itr))
+print(next(itr))
+print(next(itr))
+print(next(itr))
 try:
-    print(next(iterator))
+    print(next(itr))
 except StopIteration:
     print("Exhausted")
 
 
-m = Iterator(3)
-n = iter(Iterator(3))
+print("-----")
+
+m = SimpleIterator(3)
+n = iter(SimpleIterator(3))
 print([x for x in m])
 print([x for x in n])
+print(list(iter(iter(iter(SimpleIterator(4))))))
+
+print("-----")
+itr1 = SimpleIterator(10)
+next(itr1)
+next(itr1)
+itr2 = iter(itr1)
+print(next(itr2))
+print(next(itr1))
+print(next(itr2))
+assert itr1 is itr2
+
