@@ -1,79 +1,106 @@
+import time
+
 def counter(max):
-    print("counter invoked")
+    print("Counter invoked...")
     crr = 0
     try:
         while crr < max:
             yield crr
-            print("back to counter")
+            print("Counter resume...")
             crr += 1
     except GeneratorExit as e:
-        print(f"counter exit on {repr(e)}")
+        print(f"Counter exit on {repr(e)}")
         raise
 
     except OSError as e:
-        print(f"counter excepted on {repr(e)}")
+        print(f"Counter OSError handler: {repr(e)}")
         raise
 
     except Exception as e:
-        print(f"counter ignoring {repr(e)}")
+        # The exception is handled, but the the generator is out of the while loop
+        print(f"Counter general exceptions handler: {repr(e)}")
 
     else:
-        print(f"counter try-else clause invoked")
+        print(f"Counter try-else clause invoked")
 
     finally:
-        print(f"counter finally clause invoked")
+        print(f"Counter finally clause invoked")
+
+g = counter(3)
+print(list(g))
 
 
-print(list(counter(3)))
+print("\n=====")
 
-
-print("=====")
 g = counter(3)
 print(next(g))
 print(next(g))
 try:
     g.throw(ValueError)
 except StopIteration as e:
-    print(repr(e))  # the generator ignored, but stopped on the except clause
+    print(repr(e))  #  The generator while loop excepted (even if the exception was handled)
 
-print("=====")
+print("\n=====")
+
 g = counter(3)
 print(next(g))
 print(next(g))
 try:
-    g.throw(OSError)
+    g.throw(OSError("Oops"))
 except OSError as e:
-    print(repr(e))  # the generator raised the exception
+    print(repr(e))  # the generator re-raised the exception
 
+print("\n=====")
+def gen1():
+    yield 1
+    yield 2
+    yield 3
+    raise StopIteration
+
+g = gen1()
+print(next(g))
+print(next(g))
+print(next(g))
+try:
+    next(g)
+except StopIteration as e:
+    print("Will not get here")
+except RuntimeError as e:
+    # The generator should just finish and return, Python raises the StopIteration error for the caller
+    print("StopIteration raised *inside* a generator is converted to RuntimeError")
+
+
+print("\n===== Exception clauses in generator =====")
 
 def genx():
-    print('genx involved')
+    print('Gen x invoked...')
     try:
-        yield 'xone'
-        yield 'xtwo'
-        yield 'xthree'
+        yield 'x-one'
+        yield 'x-two'
+        yield 'x-three'
     except Exception as e:
-        print('gen x excepted')
+        print(f"Gen x excepted: {repr(e)}")
     else:
-        print("genx try-else invoked")
+        print("Gen x try-else clause invoked")
 
     finally:
-        print("genx finally invoked")
+        print("Gen x finally clause invoked")
 
-
-print("=====")
 g = genx()
 print(list(g))
-g.close()
+print("Closing exhausted generator")
+g.close()  # Nothing happens. The finally already ran when the list consumed the generator
 
-print("=====")
+print("\n-----")
+
 g = genx()
 print(next(g))
-print("closing not exhausted generator")
-g.close()
+print("Closing not-exhausted generator")
+g.close()  # finally runs with the close()
 
 
-print("=====")
+print("\n-----")
+
 g = genx()
 print(next(g))
 try:
@@ -82,86 +109,97 @@ except StopIteration as e:
     print(repr(e))
 
 
-print("=====")
-
+print("\n----- Yield in finally clause")
 
 def geny():
-    print('geny involved')
+    print('Gen y invoked...')
     try:
-        yield 'yone'
-        yield 'ytwo'
-        yield 'ythree'
+        yield 'y-one'
+        yield 'y-two'
+        yield 'y-three'
     except Exception as e:
-        print('gen y excepted')
-        yield 'excepted'
+        print(f"Gen y excepted: {repr(e)}")
+        yield 'FOO (yielded by except clause)'
     else:
-        print("geny try-else invoked")
+        print("Gen y try-else invoked")
         yield
 
     finally:
-        print("geny finally invoked")
-        yield 'foo'
+        print("Gen y finally invoked")
+        yield 'SPAM (yielded by finally)'
 
 
-g = geny()
-print(list(geny()))
-g.close()
+print("\n----- Yield in finally")
 
-print("=====")
 g = geny()
 print(next(g))
-print("closing not exhausted generator geny")
+print("Closing not exhausted generator Gen y")
 try:
     g.close()
 except RuntimeError as e:
-    print(repr(e))  # close when the finally clause yields, raises Runtime error
+    print(f"Close when the finally clause yields raises Runtime error: {repr(e)}")
 
-print("=====")
+
+print("\n===== Except Clause =====")
+
+
+print("\n----- Yield in except clause")
 g = geny()
 print(next(g))
-g.throw(ValueError)  # The exception clause yields, the generator did not stop
-print("-- after throw --")
+print(g.throw(ValueError("foo")))  # The exception clause yields, the generator did not stop
+print("-- After throw --")
 print(next(g))  # finally yields, still not getting StopIteration
-print("-- after finally --")
+print("-- After finally --")
 try:
     next(g)
 except StopIteration as e:
     print(repr(e))
 
 
-print("=====")
-
+print("\n===== Generator Exit =====")
 
 def genz():
-    try:
-        print("genz invoked")
-        while True:
+    print("Gen z invoked")
+    while True:
+        try:
             yield 42
-    except GeneratorExit:
-        print("genz ignoring GeneratorExit")
+        except GeneratorExit as e:
+            print(f"Gen z says: I ignore GeneratorExit! Ignoring: {repr(e)}")
+            continue
+        finally:
+            print("Gen z finally clause invoked")
 
 
 g = genz()
 print(next(g))
-g.close()
+print(next(g))
+print(next(g))
+print("Closing: 1st attempt...")
 try:
-    print(next(g))
-except StopIteration as e:
+    g.close()
+except Exception as e:
+    print(repr(e))  # Runtime error
+
+print(next(g))
+print(next(g))
+print("Closing: 2nd attempt...")
+try:
+    g.close()
+except Exception as e:
     print(repr(e))
 
+print(next(g))
+print(next(g))
 
-print("=====")
-g = counter(3)
-next(g)
-next(g)
-next(g)
 
-import time
-
-print("deleting generator...")
+print("Deleting generator...")
 time.sleep(2)
-del g  # finally clause is executed when it is garbage collected
+del g  # f this removes the last ref to g, Python will attempt to close it just before it's garbage collected
 time.sleep(2)
-print("exit")
-# To execute finally, Python will throw GeneratorExit before deleting the generator
+try:
+    print(g)
+except Exception as e:
+    print(repr(e))
+print("Finally deleted it. Exit")
+# To execute the finally clause, Python will throw GeneratorExit before deleting the generator
 # https://stackoverflow.com/questions/50091553/python-generators-garbage-collection
