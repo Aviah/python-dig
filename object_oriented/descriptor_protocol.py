@@ -11,10 +11,12 @@ class Descriptor:
 
 class DataDescriptor1:
     def __init__(self, *args, **kwargs):
+        # strong refs to all *class* instances accessed through this *descriptor* instance
+        # (this is a bad idea to do in real prod code)
         self._obj_store = {}
 
     def __set_name__(self, owner, name):
-        self._name = f"_private_{name}"
+        self._internal_name = f"_attr_{name}"
 
     def __get__(self, obj, objtype=None):
         if obj is None:
@@ -26,8 +28,7 @@ class DataDescriptor1:
 
     # __set__ or __delete__ (or both) makes the descriptor a data descriptor
     def __set__(self, obj, value):
-        if value:
-            self._obj_store[obj] = value
+        self._obj_store[obj] = value
 
     def __delete__(self, obj):
         del self._obj_store[obj]
@@ -42,49 +43,59 @@ class DataDescriptor2:
 
     # __set__ or __delete__ (or both) makes the descriptor a data descriptor
     def __delete__(self, obj):
-        # Do something, typically delete an object attr
-        pass
+        # Just to make this a data descriptor
+        raise NotImplementedError
 
 
 class AClass:
     p1 = Descriptor()
     p2 = DataDescriptor1()
     p3 = DataDescriptor2()
+    p4 = DataDescriptor1()
 
-
-print(AClass.p2)
 
 a = AClass()
 print(a.p1)
 print(a.p2)
 print(a.p3)
+print(a.p4, a.p4, a.p4)  # value per instance/attr
+
+print("\n=====")
 
 a.p1 = 100
 print(vars(a)['p1'])  # No set method, just sets the attribute
-print(a.p1)  # instance's __dict__ attr before non-data descriptor in the attr search
+print(a.p1)  # instance's __dict__ attr wins a non-data descriptor in the attr lookup
 a.p2 = 1234
-assert 'p2' not in vars(a)  # But not for data descriptors, goes to the __set__ method
+assert 'p2' not in vars(a)
+print(a.p2)  # Data descriptors win, gets the 1234 from its internal storage
 try:
     a.p3 = 100
-except Exception as e:
-    print(f"Exception: {repr(e)}")  # No set method
+except AttributeError as e:
+    print(f"{repr(e)}")  # Data descriptor wins, but it doesn't have a __set__ method
 
 
-print('=====')
+print("\n=====")
+
 a.__dict__['p2'] = 1000
 print(vars(a))
-print(a.p2)  # Data descriptor takes precedence
+print(a.p2)  # Data descriptor wins
 delattr(a, 'p2')
-print(a.p2)  # new randint
+print(a.p2)  # The descriptor creates new randint for this instance/attr
 delattr(DataDescriptor1, '__set__')
 delattr(DataDescriptor1, '__delete__')  # now it's a non-data descriptor
-print(a.p2)  # the instance's attr
-print('=====')
+print(a.p2)  # The descriptor is no longer data descriptor, the instance's attr wins
+
+
+print('\n=====')
+
 print(vars(a))
-print(a.p1)
+print(a.p1)  # instance attr wins the non-data descriptor
 del a.p1
 print(vars(a))
-print(a.p1)  # No attr, so use the descriptor
+print(a.p1)  # 42. No instance attr, non-data descriptor kicks in
+
+
+print('\n=====')
 
 
 class ReadOnlyDataDescriptor:
@@ -93,18 +104,17 @@ class ReadOnlyDataDescriptor:
     def __init__(self, x):
         self._x = x
 
-    def __get__(self, obj, objtype):
+    def __get__(self, obj, objtype=None):
         if obj is None:
             return self
         return self._x
 
     def __set__(self, obj, value):
         # Has a __set__ method, so it's considered data descriptor
-        raise ValueError("Read Only!")
+        raise AttributeError("Read Only!")
 
 
-print("=====")
-
+print("\n===== Read only descriptor =====")
 
 class BClass:
     p1 = ReadOnlyDataDescriptor(42)
@@ -115,15 +125,14 @@ b = BClass()
 print(b.p1)
 print(b.p2)
 b.__dict__['p1'] = 9999
-print(b.p1)
+print(b.p1)  # data descriptor wins
 try:
-    b.p1 = 9999
-except ValueError as e:
+    b.p1 = 9999  # __setattr__ raises: it's read only
+except AttributeError as e:
     print(repr(e))
 
 
-print("=====")
-
+print("\n===== No __get__ =====")
 
 class NoGetDataDescriptor:
     def __init__(self, attr_name=None):
@@ -151,8 +160,10 @@ c1 = CClass()
 c1.foo = 'spam'
 c1.baz = 'eggs'
 c1.callme = 'maybe'
-print(vars(c1))
-# The descriptor for has no __get__, Python uses it's default __get__
-print(c1.foo)  # Same name, so get the attr from __dict__
+print(vars(c1))  # were set by the descriptor __set__
+
+# No __get__ on the descriptor: reading does not invoke the descriptor
+# If the attr exists on the instance, it is returned
+print(c1.foo)
 print(c1.baz)
-print(c1.callme)  # the attr is _callme, Python default __get__ returns the descriptor
+print(c1.callme)  # No instance attr named "callme", lookup returns the descriptor *object* from the class

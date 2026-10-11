@@ -9,7 +9,6 @@ class BClass:
 class CClass(AClass, BClass):
     pass
 
-
 a = AClass()
 b = BClass()
 c = CClass()
@@ -30,10 +29,5 @@ assert isinstance(CClass, type)
 print(type(CClass))
 print(CClass.__class__)
 
-
-assert issubclass(CClass, AClass)
-print(CClass.__bases__)
-assert issubclass(CClass, (AClass, BClass))
-assert not issubclass(CClass, type)
-assert issubclass(CClass, object)
-print(CClass.__mro__)
+assert isinstance(c, BClass)
+assert isinstance(c, AClass)

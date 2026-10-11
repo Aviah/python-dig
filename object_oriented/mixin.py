@@ -1,13 +1,15 @@
-# Mixins are placed on the left, and therefore precedent in the mro
-# This is why they should not have __init__, and let Python find the __init__ on the main class
-# to the left
+# Mixins are placed to the left, before the main class
+# So the mixin's attrs will take precedence in the mro
+# This is why mixins should normally not have __init__
+# If they do have __init__, it should be cooperative
+# And let Python find the __init__ on the main class
 
 
 class Account:
     _lang = 'English'
 
     def __init__(self, name, active=False):
-        print("Account __init__invoked")
+        print(f"{self} __init__invoked")
         self._name = name
         self._active = active
         # Uncomment and run: __init__ sets the instance's attr on __dict__, so lookup doesn't get to class/mixins
@@ -72,6 +74,7 @@ class ItalianAccount(ItalianMixin, Account):  # order is important
 class PolishAccount(PolishMixin, Account):
     pass
 
+print("\n===== Mixins provides behavior through composition =====")
 
 bridget = Account(name='Bridget Jones', active=True)
 leonardo = ItalianAccount(name='Leonardo Da-Vinchi')
@@ -99,11 +102,12 @@ print(wislawa.language)
 
 
 # The order of the bases in the class declaration is important
-# attr search will stop on the first find on the mro
+# attr lookup will stop on the first find on the mro
 print(bridget.__class__.__mro__)
-print(type(leonardo).__mro__)
+print(leonardo.__class__.__mro__)
 print(wislawa.__class__.__mro__)
 
+print("\n===== Reusable functionality =====")
 
 class Partner:
     def __init__(self, name, company, title):
@@ -127,11 +131,9 @@ class Partner:
         return f"Partner: {self.name}, {self.title} of {self.company}"
 
 
-print("=====")
 
-
-# Drop-in repeated functionality with mixing
-# Caveat: the _lang attr is not used by the Partner class
+# Drop-in reusable functionality with mixins
+# Caveat: The mixin provides a _lang attr, that is not used by the Partner class
 class ItalianPartner(ItalianMixin, Partner):
     pass
 
@@ -149,21 +151,20 @@ print(pasta.greetings())
 print(pierogi.goodbye())
 
 
-print("=====")
-# __init__ collisions
+print("\n===== __init__ collisions =====")
 
 
 class FrenchMixin:
     def __init__(self):
         print("FrenchMixin __init__ invoked")
         self._greetings = 'Salutations'
-        self._goodby = 'Au revoir'
+        self._goodbye = 'Au revoir'
 
     def greetings(self):
         return f"{self._greetings} {self.name}"
 
     def goodbye(self):
-        return f"{self._goodby} {self.name}"
+        return f"{self._goodbye} {self.name}"
 
 
 class FrenchAccount(FrenchMixin, Account):
@@ -176,14 +177,12 @@ class FrenchAccount(FrenchMixin, Account):
 
 
 try:
-    victor = FrenchAccount(name='Victor Hugo')  # the mixin __init__ is not called
+    victor = FrenchAccount(name='Victor Hugo')  # the *mixin* __init__ is called
 except TypeError as e:
     print(repr(e))
 
 
-print("=====")
-# __init__ collisions
-
+print("\n===== Cooreperative mixin __init__ =====")
 
 class FrenchMixin:
     def __init__(self, *args, **kwargs):
@@ -191,29 +190,26 @@ class FrenchMixin:
         will fail later when the attr is called"""
         print("FrenchMixin __init__ invoked")
         self._greetings = 'Salutations'
-        self._goodby = 'Au revoir'
+        self._goodbye = 'Au revoir'
+        super().__init__(*args, **kwargs)
 
     def greetings(self):
         return f"{self._greetings} {self.name}"
 
     def goodbye(self):
-        return f"{self._goodby} {self.name}"
+        return f"{self._goodbye} {self.name}"
 
 
 class FrenchAccount(FrenchMixin, Account):
     pass
 
+victor = FrenchAccount(name='Victor Hugo')
+print(victor.greetings())
 
-try:
-    victor = FrenchAccount(name='Victor Hugo')
-    print(victor.greetings())
-except AttributeError as e:
-    print(repr(e))
+print("\n===== Args only mixin =====")
 
-print("=====")
+
 # works
-
-
 class Common:
     _greetings = 'Hi'
     _goodbye = 'Bye'
@@ -222,17 +218,16 @@ class Common:
         return f"{self._greetings} {self.name}"
 
     def goodbye(self):
-        return f"{self._goodby} {self.name}"
+        return f"{self._goodbye} {self.name}"
 
 
 class FrenchMixin(Common):
     _greetings = 'Salutations'
-    _goodby = 'Au revoir'
+    _goodbye = 'Au revoir'
 
 
 class FrenchAccount(FrenchMixin, Account):
     pass
-
 
 victor = FrenchAccount(name='Victor Hugo')
 print(victor.status())

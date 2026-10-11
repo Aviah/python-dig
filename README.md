@@ -23,6 +23,26 @@ Python is pretty powerful even with its basic features. Usually, you don't need 
 makes you much better at steering them, reviewing what they produce, spotting unnecessary complexity,
 and debugging when things go wrong.
 
+### The Python Vibe Coder's Mental Model
+
+The value shifts from “I need to remember how to write this” to “I need to recognise what the agent just generated,
+judge whether it is correct, and debug it when the abstraction leaks.”:
+
+* Faster code review of generated code
+* Better prompts because you can name the mechanism precisely
+* Easier debugging when generated code behaves unexpectedly
+* Less chance of accepting plausible-looking but semantically wrong code
+* Better ability to simplify overengineered agent output
+
+For a vibe/agent-assisted workflow, you do not need to memorise every detail.
+
+You need enough mental model to say: “this is a descriptor issue”, “this is bound-method behaviour”,
+“this breaks the hash contract”, “this metaclass hook is unnecessary”, etc.
+
+That makes small runnable demo-scripts useful: they are less a syntax reference,
+and more a set of *executable mental models*.
+
+
 ### How to use this repo?
 Just clone this repo next to your work stuff. Every now and then take 10-15 minutes to tinker with a single script. Run it, debug it, modify the code, add some comments.
 This should fit even to a busy schedule, one step at a time.

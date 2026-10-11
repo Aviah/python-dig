@@ -8,6 +8,7 @@ class AClass:
 class BClass(AClass):
     def __new__(cls, *args, **kwargs):
         print(f"BClass __new__ invoked: {cls} | {args} | {kwargs}")
+        # super() continues from the current class along cls's mro
         return super().__new__(cls)
 
 
@@ -15,7 +16,10 @@ print("=====")
 a = AClass()
 print(a)
 print(type(a).__mro__)
-print("=====")
+
+
+print("\n=====")
+
 b = BClass()
 print(b)
 print(type(b).__mro__)

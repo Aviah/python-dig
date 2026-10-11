@@ -1,6 +1,3 @@
-import sys
-
-
 class Ploop:
     pass
 
@@ -47,8 +44,3 @@ print(vars(a))
 print(vars(b))
 print(vars(c))
 print(vars(d))
-print(sys.getsizeof(values))
-print(sys.getsizeof(a))
-print(sys.getsizeof(b))
-print(sys.getsizeof(c))
-print(sys.getsizeof(d))

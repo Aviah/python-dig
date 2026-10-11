@@ -1,5 +1,5 @@
-# The mro algorithm is complex, but as rules of thumb:
-# left before right, subclass before superclass
+# The mro algorithm is complex, but as a rule of thumb:
+# >> left before right, subclass before superclass
 
 
 class A:
@@ -22,6 +22,8 @@ print(D.__mro__)
 print(D.foo)
 
 
+print("\n=====")
+
 class C1(B, A):
     pass
 
@@ -36,6 +38,9 @@ class E(C1, D):
 
 print(E.__mro__)
 
+
+print("\n=====")
+# So preserve subclass-before-superclass constraints across all inheritance paths
 
 class F1:
     pass
@@ -64,6 +69,10 @@ class H1(E, G1, M):
 class H2(E, G2, M):
     pass
 
+# B after C1, via E: F1 is not subclass of B
+print(H1.__mro__)
 
-print(H1.__mro__)  # B after C1, via E: F1 is not subclass of B
-print(H2.__mro__)  # B via F2 *not* via E: F2 is a subclass of B, so it must appear before B
+# B via F2 *not* via E
+# F2 is a subclass of B, so F2 must appear before B.
+# That forces B later in the combined MRO.
+print(H2.__mro__)
