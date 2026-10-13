@@ -44,7 +44,26 @@ class AClass:
     answer4 = DescriptorRandom()
 
 
+print("\n=====")
+
+# Class attribute access, triggers the descriptor protocol (invoked from class)
 print(AClass.answer1)
+
+# Direct access to the class's namespace retrieves the descriptor instance from the dictionary
+# Bypass the descriptor protocol
+# Note: The descriptor instance itself is stored on the class __dict__
+print(AClass.__dict__['answer1'])
+assert isinstance(AClass.__dict__['answer1'], Descriptor42)
+
+# getattr executes attribute access, invokes the protocol
+print(getattr(AClass, 'answer1'))
+
+# Instance attr lookup, also invokes the protocol (invoked from instance)
+print(AClass().answer1)
+
+
+print("\n=====")
+
 print(AClass.answer2)
 assert AClass.answer1 == AClass.answer2  # string
 print(AClass.answer3)

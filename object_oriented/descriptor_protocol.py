@@ -75,15 +75,44 @@ except AttributeError as e:
 
 
 print("\n=====")
+# The descriptor precedence rule applies to the attribute object that was found first in the mro
+# So data descriptor that is not on the direct class of the instance, might be shadowed by prior class in the mro
+# Once Python reaches a data descriptor, no matter how far in the mro, it takes precedence
+
+class Subclass(AClass):
+    p2 = 'pool'  # will shadow the AClass.p2 data descriptor
+
+print(AClass.p2)
+print(Subclass.p1)
+print(Subclass.p2)  # Python never reaches AClass.p2, even though that object is a data descriptor
+print(Subclass.__mro__)
+print(Subclass.p3)
+print(Subclass.p4)
+
+s = Subclass()
+print(s.p1)
+print(s.p2)
+print(s.p4)
+s.p2 = 'jump'
+print(s.p2)  # Python doesn't see the data descriptor, since Subclass.p2 shadows it
+delattr(Subclass, 'p2')
+print(s.p2)  # Now that the shadowing attr removed lookup continues to AClass, data descriptor found and prioritised
+assert s.__dict__['p2'] == 'jump'  # Still there
+
+
+print("\n=====")
 
 a.__dict__['p2'] = 1000
 print(vars(a))
 print(a.p2)  # Data descriptor wins
+
 delattr(a, 'p2')
+assert a.__dict__['p2'] == 1000  # __delete__ removed *descriptor* storage, not this
+
 print(a.p2)  # The descriptor creates new randint for this instance/attr
 delattr(DataDescriptor1, '__set__')
 delattr(DataDescriptor1, '__delete__')  # now it's a non-data descriptor
-print(a.p2)  # The descriptor is no longer data descriptor, the instance's attr wins
+print(a.p2)  # 1000, The descriptor is no longer data descriptor, the instance's attr wins
 
 
 print('\n=====')
@@ -96,7 +125,6 @@ print(a.p1)  # 42. No instance attr, non-data descriptor kicks in
 
 
 print('\n=====')
-
 
 class ReadOnlyDataDescriptor:
     """A get read only descriptor, implemented as data descriptor"""
