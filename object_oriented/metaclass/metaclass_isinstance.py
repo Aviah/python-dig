@@ -1,7 +1,7 @@
 class Metaclass(type):
-    def __instancecheck__(self, instance):
-        print(f"__instancecheck__ invoked: {self, instance}")
-        return hasattr(instance, 'spam')
+    def __instancecheck__(cls, instance):
+        print(f"Metaclass __instancecheck__ invoked: {cls, instance}")
+        return hasattr(instance, 'spam')  # can implement anything that evaluates to bool
 
 
 class AClass(metaclass=Metaclass):
@@ -18,11 +18,10 @@ class CClass:
 
 a = AClass()
 b1 = BClass()
-b2 = BClass()
-b2.spam = 'eggs'
 c = CClass()
 
-assert isinstance(a, AClass)  # not invoked
+assert isinstance(a, AClass)  # Not invoked: Python auto returns isinstance == True for direct descendants
 assert not isinstance(b1, AClass)
-assert isinstance(b2, AClass)
-assert isinstance(c, AClass)
+b1.spam = 'eggs'
+assert isinstance(b1, AClass)  # custom __instancecheck__ now returns True
+assert isinstance(c, AClass)   # same, CClass has spam

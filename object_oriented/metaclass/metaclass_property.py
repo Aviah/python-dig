@@ -1,7 +1,7 @@
-# Similar to using properties and class and accessor on instance
-# Use property on metaclass for the class. Useful for functions like "MyClass.get_manager"
+# A property on a metaclass acts as a computed property of the class object.
+# Similar to a normal @property on an instance.
 class Metaclass(type):
-    num = 10
+    num = 100
 
     @property
     def x(cls):
@@ -17,12 +17,13 @@ class AClass(metaclass=Metaclass):
 class BClass(metaclass=Metaclass):
     @classmethod
     def mult_it(cls):
-        return cls.num * 10
+        return cls.num * 9
 
 
 print(AClass.x)
 print(BClass.x)
-
-
-# https://stackoverflow.com/questions/69940846/why-metaclass-works-for-a-class-propery-but-a-classmethod-property-doesnt
-# https://stackoverflow.com/questions/50785774/property-setter-issues-in-metaclass
+try:
+    a = AClass()
+    a.x
+except AttributeError as e:
+    print(e)  # metaclass property is available on AClass, not on its instances

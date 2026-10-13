@@ -1,3 +1,6 @@
+# type(name, bases, namespace) can create a class dynamically.
+# Conceptually similar to writing "class" statement
+
 AClass = type('AClass', (), {})
 BClass = type('BClass', (AClass,), {'foo': 'baz'})
 

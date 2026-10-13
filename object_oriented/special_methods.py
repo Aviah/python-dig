@@ -1,4 +1,5 @@
-# dunder methods
+# magic methods/ dunder methods
+
 class AClass:
     def __call__(self, *args, **kwargs):
         print(f"{self} __call__ invoked")
@@ -53,3 +54,24 @@ class BClass:
 b = BClass()
 print(type(b))
 print(len(b))  # Implicit call to the proper magic method on class
+
+
+print("\n=====")
+# Normally, special method for instance is found on a builtin or finally on object
+# Which is the last class in the mro for instances
+# However, any class in the mro can "steal" a special method
+
+class A(list):
+    def __len__(self):
+        return 42
+
+class B(A):
+    ...
+
+
+b = B()
+b.append(1234)
+b.extend(list(range(10)))
+print(b)
+print(len(b))  # from A.__len__
+print(type(b).mro())

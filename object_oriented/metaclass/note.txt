@@ -1,0 +1,3 @@
+Start with: class_creation.py, instance_creation.py, call_order.py
+
+Then a deeper dive: attr_lookup.py, type_object.py

@@ -1,22 +1,21 @@
 class Metaclass(type):
-    """
-    The class is ready, can do do something with the class object
-    """
 
     def __init__(cls, name, bases, attrs):
         print(f"Metaclass __init__ invoked: {cls} | {name} | {bases} | {attrs}")
+        super().__init__(name, bases, attrs)
 
-    def __new__(metacls, name, bases, attrs):
+    def __new__(mcls, name, bases, attrs):
         """
         Call to the metaclass, to create the class
+        Python treats __new__ as static method
         """
-        print(f"Metaclass __new__ invoked: {metacls} | {name} | {bases} | {attrs}")
-        print("Creating class")
-        return super().__new__(metacls, name, bases, attrs)  # same as type.__new__(...)
+        print(f"Metaclass __new__ invoked: {mcls} | {name} | {bases} | {attrs}")
+        print("Creating the class")
+        return super().__new__(mcls, name, bases, attrs)  # same as type.__new__(...)
 
     def __call__(cls, *args, **kwargs):
         print(f"Metaclass __call__ invoked: {cls} | {args} | {kwargs}")
-        return super().__call__(cls, *args, **kwargs)
+        return super().__call__(*args, **kwargs)
 
 
 class Base1:
@@ -27,8 +26,10 @@ class Base2:
     pass
 
 
+print("\n===== Class creation =====")
+
 class AClass(Base1, Base2, metaclass=Metaclass):
-    print("Reading Aclass definitions...")
+    print("Reading AClass definitions...")
     foo = 'baz'
 
     def __new__(cls, *args, **kwargs):
@@ -40,7 +41,7 @@ class AClass(Base1, Base2, metaclass=Metaclass):
 
     def __init__(self, *args, **kwargs):
         """
-        The instance is ready, so return nothing
+        The instance already exists, initialise it and return None
         """
         print(f"AClass __init__ invoked {args} | {kwargs}")
 
@@ -53,9 +54,10 @@ class AClass(Base1, Base2, metaclass=Metaclass):
 print(AClass)  # class created
 
 
-print("=====")
+print("\n===== Instance creation =====")
+
 a = AClass(100)
 print(a)
 
 
-# see metaclass_instance_creation.py
+# See class_creation.py, instance_creation.py
