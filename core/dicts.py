@@ -21,7 +21,9 @@ c = colors.keys()
 del colors['red']
 print('red' in c)
 print(type(c))
-print(list(zip(colors.keys(), colors.values())))  # keys, values are iterators
+
+# keys() and values() return dynamic views; zip() iterates over them
+print(list(zip(colors.keys(), colors.values())))
 for k in colors:
     print(k)
 d1 = dict(c=3, a=1, b=2)
@@ -29,19 +31,29 @@ print(d1)
 print(type(d1.items().mapping))  # read only proxy
 print(type(d1.keys().mapping))
 print(type(d1.values().mapping))
+m = d1.items().mapping
+print(m)
+d1['c'] = 3
+try:
+    m['c'] = 3
+except TypeError as e:
+    print(repr(e))  # mapping is a read only proxy of the dict
+
 s = set(['a', 'b', 'x'])
-print(s.difference(d1.items().mapping))
-assert set([100, 200, 300]).isdisjoint(d1.values().mapping)
+print(s.difference(d1.items()))  # direct set operations
+assert set([100, 200, 300]).isdisjoint(d1.values())
 print(d1.pop('a'))
 del d1['b']
 print(d1)
 
 
-assert not d1.values().mapping.__contains__(4)
-print(d1.keys().mapping.__iter__())
+assert not d1.__contains__(4)
+itd = d1.keys().__iter__()
+print(itd)
+print(next(itd))
 
 # comprehension
-print("=====")
+print("\n=====")
 d = {k: v for k, v in [('foo', 'bar'), ('spam', 'eggs')]}
 print(d)
 foo = {'a': 1, 'b': 2}
@@ -64,7 +76,7 @@ assert d1 == d
 assert d1 is not d
 e1 = dict(**e)
 for i in range(5):
-    # pop item by order (note: popitem is thread safe)
+    # popitem by order of insertion, removes recently inserted (note: popitem is thread safe)
     print(d1.popitem())
     print(e1.popitem())
 
@@ -149,7 +161,7 @@ print(d)
 
 for k in list(d.keys()):
     # iterate over a copy of the keys, works
-    if type(k) == int:
+    if isinstance(k, int):
         del d[k]
 print(d)
 

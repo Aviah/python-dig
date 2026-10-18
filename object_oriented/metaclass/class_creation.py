@@ -22,9 +22,12 @@ class Metaclass(type):
         # Here double_jump is used by __prepare__ and merely accepted/ignored
         # by __new__ and __init__.
 
-        namespace = type.__prepare__(name, bases, **kwargs)
+        namespace = super().__prepare__(name, bases, **kwargs)
         namespace['bloop'] = 'jump'  # customizing the to-be-created class's namespace
-        if kwargs.get('double_jump', False):
+
+        # Each metaclass hook receives its own kwargs dict.
+        # Popping here does not affect the kwargs later passed to __new__ or __init__.
+        if kwargs.pop('double_jump', False):
             namespace['bloop'] = 'jumpjump'
 
         print(namespace)
@@ -41,8 +44,16 @@ class Metaclass(type):
         """
         print(f"Metaclass __new__ invoked: {mcls} | {name} | {bases} | {attrs}")
         assert super().__new__ is type.__new__
-        cls = type.__new__(mcls, name, bases, attrs)
+
+        # In this demo the kwargs are treated as metaclass configuration.
+        # Since __new__ does not forward them to type.__new__, they do not reach __init_subclass__.
+        # see metaclass/subclass.py
+        cls = super().__new__(mcls, name, bases, attrs)
+
         print(cls)  # cls was created
+        if 'double_jump' in kwargs:
+            # __prepare__ popped double_jump from its own kwargs dict: it's still available to other mcls hooks
+            print("double_jump provided to metaclass")
         return cls
 
     def __init__(cls, name, bases, attrs, **kwargs):
@@ -51,6 +62,14 @@ class Metaclass(type):
         Can modify it in place
         Returns None: the class object already exists"""
         print(f"Metaclass __init__ invoked: {cls} | {name} | {bases} | {attrs}")
+
+        if 'double_jump' in kwargs:
+            # __prepare__ popped double_jump from its own kwargs dict: it's still available to other mcls hooks
+            print("double_jump provided to metaclass")
+
+        # The **kwargs are for the metaclass itself
+        # Forward **kwargs in metaclass __init__ only if the next metaclass in the mro is expected to consume them.
+        # Here it's type, so we don't pass them
         super().__init__(name, bases, attrs)  # Conceptually type.__init__(cls, name, bases, attrs)
 
 

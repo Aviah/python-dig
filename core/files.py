@@ -1,10 +1,13 @@
-# + file is created if not exists
-# w, r: stream positioned at the beginning of the file
+# + makes the mode readable and writable; it does not affect file creation
+# r: read, file must exist
+# w: write, create if needed, otherwise truncate; start at beginning
+# a: append, create if needed, writes always go to the end
+
 def print_the_file():
     with open('foo.txt', 'r') as f:
         print(f.read())
 
-    print("=====")
+    print("\n=====")
 
 
 with open('foo.txt', 'w') as f:
@@ -55,9 +58,21 @@ with open('data.txt', 'r') as f:
     f.seek(0)
     print(next(f))
 
-# unicode
+
+with open('foo.txt', 'a+') as f:
+    f.write('Laputa\n')
+    f.seek(0)
+    f.write('Utopia')  # with a write always goes to the end
+
+print_the_file()
+
+
+
+# Unicode
+print("\n===== Unicode =====")
+
 with open('baz.txt', 'r') as f:
-    print(f.read())  # default encoding by context $LANG
+    print(f.read())  # default encoding by context $LANG, from 3.15 it's UTF-8
 
 with open('baz.txt', 'rb') as f:
     print(f.read())
@@ -71,6 +86,19 @@ try:
 except Exception as e:
     print(repr(e))
 
+s = "\u2602:\u2615:\u2708:\u270C"
+with open('/tmp/blah.txt', 'w') as f:
+    f.write(s)  # default encoding on write is UTF-8
 
+with open('/tmp/blah.txt', 'r') as f:
+    print(f.read())  # default encoding on read is UTF-8
+
+try:
+    with open('/tmp/blah.txt', 'r', encoding='ascii') as f:
+        print(f.read())  # default encoding is UTF-8
+except UnicodeDecodeError as e:
+    print(repr(e))
+
+# restores foo.txt
 with open('foo.txt', 'w') as f:
     f.write('Luggnagg')

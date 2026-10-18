@@ -99,7 +99,7 @@ def outer():
         print(f"c8: {country['name']}")
 
     def c9():
-        country = {'name': 'Luggnagg'}
+        country = {'name': 'Luggnagg'}  # new local binding, no effect on outer scope
         print(f"c9: {country['name']}")
 
     def c10():
@@ -113,15 +113,46 @@ for f in funcs:
 
 
 """
-Classes do not use lexical scope. They create a a namespace, and names become attributes.
-Search is done via attributes lookup, not via lexical scope.
+Classes do not use lexical scope. They have a namespace, and names become attributes.
+Lookup is done via attributes lookup, not via lexical scope.
 
 --- Will not work ---
 class AClass:
     foo = 'baz'
 
     def print_foo(self):
-        nonlocal foo  # wrong
+        nonlocal foo  # wrong, the class is *not* an enclosing lexical scope
         print(foo)  # should be self.foo
 
 """
+
+
+print("\n===== globals and locals")
+# Useful for introspection
+
+mdlvar = 'FOO'
+assert 'mdlvar' in globals()
+assert globals()['mdlvar'] == 'FOO'
+print(globals())  # the current frame's global namespace, normally the module namespace
+print(locals())
+assert globals() is locals()  # on the module it's the same object
+def f1():
+    f1var = 'BAR'
+    print(f"f1: {locals()}")
+    def closure():
+        nonlocal f1var
+        nestedvar = 'SPAM'
+        print(f"closure: {locals()}")
+    return closure
+
+class A:
+    x = 100
+    print(f"class A: {locals()}")
+
+    def do_this_or_that(self):
+        mthdvar = 'EGGS'
+        print(f"method: {locals()}")
+
+closure = f1()
+closure()
+A().do_this_or_that()
